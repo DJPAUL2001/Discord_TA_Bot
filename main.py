@@ -3,6 +3,7 @@ import os
 from discord import app_commands
 from discord.ext import commands
 from dotenv import load_dotenv
+from llm_helper import get_response
 
 load_dotenv()
 
@@ -25,6 +26,9 @@ async def hello(interaction: discord.Interaction):
 @bot.tree.command(name="say")
 @app_commands.describe(thing_to_say = "What should I say?")
 async def say(interaction: discord.Interaction, thing_to_say: str):
-  await interaction.response.send_message(f"{interaction.user.name} said: `{thing_to_say}`")
+  await interaction.response.send_message(f"""
+      {interaction.user.name} said: `{thing_to_say}`;
+      I said: `{get_response(thing_to_say)}`
+  """)
 
 bot.run(TOKEN)
