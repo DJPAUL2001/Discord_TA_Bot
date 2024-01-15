@@ -1,4 +1,3 @@
-import utils
 from tqdm import tqdm
 from IPython.display import display, Markdown
 from openai import OpenAI
