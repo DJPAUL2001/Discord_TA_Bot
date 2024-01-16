@@ -28,6 +28,6 @@ async def hello(interaction: discord.Interaction):
 async def ask(interaction: discord.Interaction, question: str):
     await interaction.response.defer()
     response = get_response(question)
-    await interaction.followup.send(f"{interaction.user.name} asked: `{question}`;\n\nResponse: {response}")
+    await interaction.followup.send(f"{interaction.user.name} asked: `{question}`\n\nResponse: {response}")
 
 bot.run(TOKEN)
