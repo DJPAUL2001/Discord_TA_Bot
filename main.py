@@ -19,9 +19,14 @@ async def on_ready():
   except Exception as e:
     print(e)
 
-@bot.tree.command(name="hello")
-async def hello(interaction: discord.Interaction):
-  await interaction.response.send_message(f'Hey {interaction.user.mention}! This is a slash command!', ephemeral=True)
+"""
+Note: When you set ephemeral=True in a response, the message will be sent as an ephemeral message. 
+Only the user who triggered the command will be able to see this message. 
+Other users in the channel will not be able to see it.
+"""
+# @bot.tree.command(name="hello")
+# async def hello(interaction: discord.Interaction):
+#   await interaction.response.send_message(f'Hey {interaction.user.mention}! This is a slash command!', ephemeral=True)
 
 @bot.tree.command(name="ask")
 @app_commands.describe(question="Enter your question here.")
