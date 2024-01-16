@@ -33,6 +33,6 @@ Other users in the channel will not be able to see it.
 async def ask(interaction: discord.Interaction, question: str):
     await interaction.response.defer()
     response = get_response(question)
-    await interaction.followup.send(f"{interaction.user.name} asked: `{question}`\n\nResponse: {response}")
+    await interaction.followup.send(f"{interaction.user.name} asked: `{question}`\n\nResponse: {response}\nNote: Discord limits messages to 2000 characters")
 
 bot.run(TOKEN)
