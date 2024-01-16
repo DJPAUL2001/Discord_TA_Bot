@@ -38,16 +38,28 @@ def get_response(prompt):
                 \"{prompt}\"
                 
                 Do not skip any detail.
+                Response MUST be 2000 or fewer characters in length.
                 """
             }
         ],
-        model="gpt-4-1106-preview",
+        # model="gpt-4-1106-preview",
+        model="gpt-3.5-turbo-1106",  # for faster response time
         temperature=1,
         top_p=1,
         presence_penalty=0,
         frequency_penalty=0,
-        max_tokens=4096,
+        max_tokens=100,  # 4096 is model limit, but 2000 char is discord limit
     )
 
     result = chat_completion.choices[0].message.content
-    return display(Markdown(result))
+    # return display(Markdown(result))  # uncomment this line if you are using Jupyter Notebook
+
+    # Check if the length of the response exceeds Discord's limit
+    if len(result) > 2000:
+        # If it does, truncate it to the maximum allowed length
+        result = result[:2000]
+        print("Response was truncated to 2000 characters.")
+        print(result)
+
+    return result
+
