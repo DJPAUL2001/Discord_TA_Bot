@@ -1,7 +1,7 @@
 import discord
 import os
 from dotenv import load_dotenv
-from llm_helper import get_response
+from llm_helper import get_response, get_thread_name
 
 load_dotenv()
 
@@ -61,7 +61,7 @@ async def on_message(message):
             await message.channel.send(f"{response}\n\n`Note: Discord limits messages to 2000 characters`")
         else:
             # Create a new thread
-            thread = await message.channel.create_thread(name="Thread name", auto_archive_duration=60, type=discord.ChannelType.public_thread, message=message)
+            thread = await message.channel.create_thread(name=get_thread_name(question), auto_archive_duration=60, type=discord.ChannelType.public_thread, message=message)
             
             # Send a message in the thread
             response = get_response(question)
