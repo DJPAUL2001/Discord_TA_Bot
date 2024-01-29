@@ -1,38 +1,70 @@
 import discord
 import os
-from discord import app_commands
-from discord.ext import commands
 from dotenv import load_dotenv
 from llm_helper import get_response
 
 load_dotenv()
 
-TOKEN = os.getenv("TOKEN")
-bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
+TOKEN = os.getenv('DISCORD_TOKEN')
+bot = discord.Bot(intents=discord.Intents.all())
+
 
 @bot.event
 async def on_ready():
-  print("Bot is up and ready!")
-  try:
-    synced = await bot.tree.sync()
-    print(f"Synced {len(synced)} command(s)")
-  except Exception as e:
-    print(e)
+    print(f'Bot is up and ready!')
 
-"""
-Note: When you set ephemeral=True in a response, the message will be sent as an ephemeral message. 
-Only the user who triggered the command will be able to see this message. 
-Other users in the channel will not be able to see it.
-"""
-# @bot.tree.command(name="hello")
-# async def hello(interaction: discord.Interaction):
-#   await interaction.response.send_message(f'Hey {interaction.user.mention}! This is a slash command!', ephemeral=True)
+# @bot.slash_command(name='ask', description="Enter your question here.")
+# async def ask(ctx: discord.ApplicationContext, question: str):
+#     await ctx.defer()
+#     response = get_response(question)
+#     # Check if the context is a thread
+#     if isinstance(ctx.channel, discord.Thread):
+#         # Print all messages in the thread
+#         async for message in ctx.channel.history(limit=100):
+#             print(message.content)
+        
+#         # Respond in the thread
+#         await ctx.respond(f"{ctx.author.name}: `{question}`\n\nResponse: `{response}`\n\nNote: Discord limits messages to 2000 characters")
+#     else:
+#         # Respond in the thread
+#         await ctx.respond(f"Creating new thread...")
 
-@bot.tree.command(name="ask")
-@app_commands.describe(question="Enter your question here.")
-async def ask(interaction: discord.Interaction, question: str):
-    await interaction.response.defer()
-    response = get_response(question)
-    await interaction.followup.send(f"{interaction.user.name} asked: `{question}`\n\nResponse: {response}\nNote: Discord limits messages to 2000 characters")
+#         # Create a new thread
+#         thread = await ctx.channel.create_thread(name="Thread name", auto_archive_duration=60, type=discord.ChannelType.public_thread)
+        
+#         # Send a message in the thread
+#         await thread.send(f"{ctx.author.name}: `{question}`\n\nResponse: `{response}`\n\nNote: Discord limits messages to 2000 characters")
+
+@bot.event
+async def on_message(message):
+    # Check if the bot is mentioned
+    if bot.user in message.mentions:
+        # Extract the question from the message content
+        question = message.content.replace(f'<@{bot.user.id}>', '').strip()
+        
+        # Check if the context is a thread
+        if isinstance(message.channel, discord.Thread):
+            message_history = []
+            # Print all messages in the thread
+            async for msg in message.channel.history(limit=100):
+                if len(msg.content) > 0:
+                  if msg.author == bot.user:
+                      processed_msg = msg.content.replace(f'\n\n`Note: Discord limits messages to 2000 characters`', '').strip()
+                      message_history.append({"role": "assistant", "content": processed_msg})
+                  else:
+                      message_history.append({"role": "user", "content": msg.content})
+            message_history.reverse()
+            print(message_history)
+            
+            # Respond in the thread
+            response = get_response(question, message_history)
+            await message.channel.send(f"{response}\n\n`Note: Discord limits messages to 2000 characters`")
+        else:
+            # Create a new thread
+            thread = await message.channel.create_thread(name="Thread name", auto_archive_duration=60, type=discord.ChannelType.public_thread, message=message)
+            
+            # Send a message in the thread
+            response = get_response(question)
+            await thread.send(f"{response}\n\n`Note: Discord limits messages to 2000 characters`")
 
 bot.run(TOKEN)
