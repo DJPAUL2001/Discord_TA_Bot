@@ -9,8 +9,24 @@ import os
 
 load_dotenv()
 LLM_MODEL = "gpt-3.5-turbo-1106"
+LLM_MAX_TOKENS = 4096
 DELIMITER = "####"
 DISCORD_CHAR_LIMIT = 2000
+
+def get_memory(message_history=[]):
+    # Create a memory object, and the llm object used by memory object for summarization
+    llm = ChatOpenAI(api_key=os.getenv("OPENAI_KEY"), temperature=0.0, model=LLM_MODEL)
+    memory = ConversationSummaryBufferMemory(llm=llm, ai_prefix="Teacher", human_prefix="Student", 
+                                                max_token_limit=LLM_MAX_TOKENS)
+    
+    # Add messages to memory
+    for msg in message_history:
+        if msg["role"] == "assistant":
+            memory.chat_memory.add_ai_message(msg["content"])
+        else:
+            memory.chat_memory.add_user_message(msg["content"])
+
+    return memory
 
 def get_thread_name(message):
     llm = ChatOpenAI(api_key=os.getenv("OPENAI_KEY"), temperature=1, model=LLM_MODEL, max_tokens=10)
@@ -71,9 +87,3 @@ def get_response(prompt, memory):
         print(f"Response was truncated to {DISCORD_CHAR_LIMIT} characters.\n", result)
 
     return result
-
-# if __name__ == "__main__":
-#     llm = ChatOpenAI(api_key=os.getenv("OPENAI_KEY"))
-#     memory = ConversationSummaryBufferMemory(llm=llm, ai_prefix="Teacher", human_prefix="Student", max_token_limit=1000)
-#     print(get_response("How do I make a thread?", memory))
-#     print(get_thread_name("How do I make a thread?"))
