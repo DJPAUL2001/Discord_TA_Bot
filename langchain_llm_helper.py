@@ -21,9 +21,9 @@ def get_memory(message_history=[]):
     # Add messages to memory
     for msg in message_history:
         if msg["role"] == "assistant":
-            memory.chat_memory.add_ai_message(msg["content"])
+            memory.chat_memory.add_ai_message(str(msg["content"]))
         else:
-            memory.chat_memory.add_user_message(msg["content"])
+            memory.chat_memory.add_user_message(str(msg["content"]))
 
     return memory
 
@@ -52,7 +52,6 @@ def get_response(prompt, memory):
     Respond using markdown. DO NOT SHARE ANY CODE AT ANY TIME. Only use words or pseudocode.
     You're a Makecode Python expert and a high school computer science teacher responding to student questions. 
     Be as brief as possible. Make sure your response does not exceed 2000 characters, including any code examples.
-    If the teacher does not know the answer to a question, the teacher truthfully says, "I don't know".
     DO NOT EXCEED 2000 CHARACTERS. 
     The user comment or question will be preceded and proceeded by the following delimiters: ####
 
