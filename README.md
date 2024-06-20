@@ -36,7 +36,7 @@ To use this bot, you need to have Python installed on your machine and you need 
 ### Usage
 To interact with the bot, simply mention it in a message on your Discord server. The bot will either respond in the thread where it was mentioned or create a new thread if it was mentioned outside of a thread.
 
+![alt text](./project_discord_bot.png)
+
 ### Note
 This bot is designed to be used in educational settings. It should not be used to share sensitive information or to perform tasks that require a high level of security.
-
-
